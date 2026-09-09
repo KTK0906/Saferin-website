@@ -103,15 +103,25 @@ export const loadCurrentUserRole = async (forceRefresh = true): Promise<AppRole 
     return loadedRole
 
   try {
-    const { data, error } = await supabase
-      .from('app_users')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle()
+    console.log('[PERMISSIONS DEBUG] Fetching role for user:', user.id)
+
+    const { data, error } = await Promise.race([
+      supabase
+        .from('app_users')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Query timeout after 5s')), 5000)
+      )
+    ]) as any
 
     if (error) {
       console.error('[PERMISSIONS DEBUG] Supabase Query Error:', error.message)
+      throw error
     }
+
+    console.log('[PERMISSIONS DEBUG] Query successful, data:', data)
 
     // Clean up role string (e.g., "Principal " -> "principal")
     const rawRole = (data?.role || user.user_metadata?.role || '').trim().toLowerCase()
