@@ -344,9 +344,9 @@ onMounted(loadDevices)
                 <td>{{ formatDate(device.last_maintenance) }}</td>
                 <td>
                   <div class="action-buttons">
-                    <VBtn icon="tabler-edit" variant="text" color="primary" size="small"
+                    <VBtn v-if="$can('manage', 'sensor_management')" icon="tabler-edit" variant="text" color="primary" size="small"
                       aria-label="View or edit sensor details" @click="openEditDialog(device)" />
-                    <VBtn icon="tabler-trash" variant="text" color="error" size="small" aria-label="Delete sensor"
+                    <VBtn v-if="$can('delete', 'sensor_management')" icon="tabler-trash" variant="text" color="error" size="small" aria-label="Delete sensor"
                       @click="deleteDevice(device)" />
                   </div>
                 </td>

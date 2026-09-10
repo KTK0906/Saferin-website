@@ -345,12 +345,12 @@ onMounted(load)
                     </template>
                     <VListItemTitle>View</VListItemTitle>
                   </VListItem>
-                  <VListItem @click="openEdit(item)"><template #prepend>
+                  <VListItem v-if="$can('manage', 'user_management')" @click="openEdit(item)"><template #prepend>
                       <VIcon icon="tabler-pencil" />
                     </template>
                     <VListItemTitle>Edit</VListItemTitle>
                   </VListItem>
-                  <VListItem @click="remove(item)"><template #prepend>
+                  <VListItem v-if="$can('delete', 'user_management')" @click="remove(item)"><template #prepend>
                       <VIcon icon="tabler-trash" />
                     </template>
                     <VListItemTitle>Delete</VListItemTitle>

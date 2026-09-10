@@ -250,10 +250,10 @@ const saveAttendance = async () => {
               </VChip>
             </template>
             <template #item.actions="{ item }">
-              <IconBtn @click="openEdit(item)">
+              <IconBtn v-if="$can('manage', 'staff_shift_management')" @click="openEdit(item)">
                 <VIcon icon="tabler-edit" />
               </IconBtn>
-              <IconBtn @click="remove(item)">
+              <IconBtn v-if="$can('delete', 'staff_shift_management')" @click="remove(item)">
                 <VIcon icon="tabler-trash" />
               </IconBtn>
             </template>
@@ -323,7 +323,7 @@ const saveAttendance = async () => {
               </VChip>
             </template>
             <template #item.actions="{ item }">
-              <IconBtn @click="openEditAttendance(item)">
+              <IconBtn v-if="$can('manage', 'staff_shift_management')" @click="openEditAttendance(item)">
                 <VIcon icon="tabler-edit" />
               </IconBtn>
             </template>

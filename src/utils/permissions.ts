@@ -25,9 +25,17 @@ export const dbRoleToAppRole: Record<string, AppRole> = {
   'ot_pt': 'ot_pt',
   'caregiver': 'caregiver',
 }
+const normRole = (value: string) => value.trim().toLowerCase().replace(/[_-]/g, ' ')
 
 let loadedUserId: string | null = null
 let loadedRole: AppRole | null = null
+let databasePermissions: Record<string, string[]> = {}
+
+const pageNameToPermission = (name: string): PagePermission | undefined => {
+  const key = name.toLowerCase().replace(/[^a-z0-9]+(.)/g, (_m, c) => String(c).toUpperCase()).replace(/[^a-zA-Z0-9]/g, '')
+  const aliases: Record<string, PagePermission> = { userManagement: 'user_management', staffTaskManagement: 'staff_task_management', zoneManagement: 'zone_management', familyVisits: 'family_visits', staffShiftManagement: 'staff_shift_management', historicalSensorData: 'historical_sensor_data', alertRequestHistory: 'alert_history', sensorManagement: 'sensor_management', elderlyList: 'elderly_list', houseManagement: 'house_management', systemSettings: 'system_settings', systemLogs: 'system_logs', deviceManagement: 'device_management', dashboard: 'dashboard', reports: 'reports' }
+  return aliases[key]
+}
 
 // Exact match with your database table rules
 export const pageAccess = {
@@ -64,12 +72,19 @@ export const getRoleRules = (role: AppRole): Rule[] => {
     ]
   }
 
-  return (Object.entries(pageAccess) as [PagePermission, readonly AppRole[]][])
-    .filter(([, permittedRoles]) => permittedRoles.includes(role))
-    .flatMap(([subject]) => [
-      { action: 'read' as const, subject },
-      { action: 'manage' as const, subject },
-    ])
+  const configured = Object.keys(databasePermissions).length > 0
+    ? Object.entries(databasePermissions).map(([subject, permissions]) => ({ subject: subject as PagePermission, permissions }))
+    : (Object.entries(pageAccess) as [PagePermission, readonly AppRole[]][]).filter(([, permittedRoles]) => permittedRoles.includes(role)).map(([subject]) => ({ subject, permissions: ['read', 'write', 'delete'] }))
+  return configured.flatMap(({ subject, permissions }) => [
+    ...(permissions.includes('read') ? [{ action: 'read' as const, subject }] : []),
+    ...(permissions.includes('write') ? [{ action: 'manage' as const, subject }] : []),
+    ...(permissions.includes('delete') ? [{ action: 'delete' as const, subject }] : []),
+  ])
+}
+
+export const hasPagePermission = (subject: PagePermission | string, action: 'read' | 'write' | 'delete') => {
+  const rules = databasePermissions[subject] || []
+  return rules.includes(action) || (action === 'write' && rules.includes('manage'))
 }
 
 export const applyRolePermissions = (role: AppRole) => {
@@ -88,6 +103,7 @@ export const clearRolePermissions = () => {
   useCookie<AppRole | null>('userRole').value = null
   loadedUserId = null
   loadedRole = null
+  databasePermissions = {}
 }
 
 export const loadCurrentUserRole = async (forceRefresh = true): Promise<AppRole | null> => {
@@ -103,25 +119,15 @@ export const loadCurrentUserRole = async (forceRefresh = true): Promise<AppRole 
     return loadedRole
 
   try {
-    console.log('[PERMISSIONS DEBUG] Fetching role for user:', user.id)
-
-    const { data, error } = await Promise.race([
-      supabase
-        .from('app_users')
-        .select('role')
-        .eq('id', user.id)
-        .maybeSingle(),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Query timeout after 5s')), 5000)
-      )
-    ]) as any
+    const { data, error } = await supabase
+      .from('app_users')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle()
 
     if (error) {
       console.error('[PERMISSIONS DEBUG] Supabase Query Error:', error.message)
-      throw error
     }
-
-    console.log('[PERMISSIONS DEBUG] Query successful, data:', data)
 
     // Clean up role string (e.g., "Principal " -> "principal")
     const rawRole = (data?.role || user.user_metadata?.role || '').trim().toLowerCase()
@@ -131,6 +137,14 @@ export const loadCurrentUserRole = async (forceRefresh = true): Promise<AppRole 
 
     console.log('[PERMISSIONS DEBUG] Resolved Role:', `"${data?.role}" -> "${realRole}"`)
 
+    const { data: pageRows } = await supabase.from('page_permissions').select('page_name, allowed_roles, permissions')
+    databasePermissions = {}
+    ;(pageRows || []).forEach((row: any) => {
+      const subject = pageNameToPermission(row.page_name)
+      const allowed = (row.allowed_roles || []).some((r: string) => dbRoleToAppRole[normRole(r)] === realRole)
+      if (subject && allowed)
+        databasePermissions[subject] = row.permissions || ['read']
+    })
     loadedUserId = user.id
     loadedRole = realRole
     applyRolePermissions(realRole)
