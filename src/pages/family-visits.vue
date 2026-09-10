@@ -191,7 +191,7 @@ onMounted(load)
                   </td>
                   <td>{{ visit.notes || 'Not recorded' }}</td>
                   <td>
-                    <VBtn icon="tabler-trash" variant="text" color="error" size="small" @click="deleteVisit(visit)" />
+                    <VBtn v-if="$can('delete', 'family_visits')" icon="tabler-trash" variant="text" color="error" size="small" @click="deleteVisit(visit)" />
                   </td>
                 </tr>
                 <tr v-if="!filteredVisits.length">

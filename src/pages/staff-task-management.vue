@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabaseClient'
 type Task = { id: string; time?: string; zone?: string | null; elderly?: string | null; task?: string; action?: string; description?: string | null; staff?: string; due_date?: string; priority?: string; status?: string }
 const tasks = ref<Task[]>([])
 const staff = ref<string[]>([])
+const taskCategories = ref<string[]>([])
 const loading = ref(false)
 const errorMessage = ref('')
 const search = ref('')
@@ -25,13 +26,15 @@ const statuses = ['Completed', 'In Progress', 'Pending']
 
 const load = async () => {
   loading.value = true; errorMessage.value = ''
-  const [taskResult, staffResult] = await Promise.all([
+  const [taskResult, staffResult, categoryResult] = await Promise.all([
     supabase.from('staff_tasks').select('*').order('id'),
     supabase.from('staff').select('name').order('name'),
+    supabase.from('staff_task_categories').select('name').order('sort_order').order('name'),
   ])
   if (taskResult.error) errorMessage.value = taskResult.error.message
   tasks.value = (taskResult.data ?? []) as Task[]
   staff.value = [...new Set((staffResult.data ?? []).map(person => person.name).filter(Boolean))]
+  taskCategories.value = (categoryResult.data ?? []).map((item: any) => item.name).filter(Boolean)
   loading.value = false
 }
 
@@ -111,8 +114,8 @@ onMounted(load)
               <VMenu activator="parent">
                 <VList>
                   <VListItem @click="openTaskDetails(item)">View</VListItem>
-                  <VListItem @click="openEditTask(item)">Edit</VListItem>
-                  <VListItem @click="deleteTask(item)">Delete</VListItem>
+                  <VListItem v-if="$can('manage', 'staff_task_management')" @click="openEditTask(item)">Edit</VListItem>
+                  <VListItem v-if="$can('delete', 'staff_task_management')" @click="deleteTask(item)">Delete</VListItem>
                 </VList>
               </VMenu>
             </VBtn>
@@ -132,7 +135,7 @@ onMounted(load)
         <VForm @submit.prevent="saveTask">
           <VRow>
             <VCol cols="12">
-              <AppTextField v-model="taskForm.task" label="Task Title" />
+              <AppSelect v-model="taskForm.task" :items="taskCategories" label="Task Title" />
             </VCol>
             <VCol cols="12">
               <AppTextarea v-model="taskForm.description" label="Description" rows="3" />

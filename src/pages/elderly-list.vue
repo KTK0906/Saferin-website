@@ -305,8 +305,8 @@ const getSensorStatusColor = (status: string) => {
                             </template>
                             <VList density="compact">
                                 <VListItem prepend-icon="tabler-eye" title="View" @click="openElderlyDetail(item)" />
-                                <VListItem prepend-icon="tabler-edit" title="Edit" @click="openEditElderly(item)" />
-                                <VListItem prepend-icon="tabler-trash" title="Delete" @click="deleteElderly(item)" />
+                                <VListItem v-if="$can('manage', 'elderly_list')" prepend-icon="tabler-edit" title="Edit" @click="openEditElderly(item)" />
+                                <VListItem v-if="$can('delete', 'elderly_list')" prepend-icon="tabler-trash" title="Delete" @click="deleteElderly(item)" />
                             </VList>
                         </VMenu>
                     </div>

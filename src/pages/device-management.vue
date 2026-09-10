@@ -153,10 +153,10 @@ onMounted(load)
                     </VChip>
                 </template>
                 <template #item.actions="{ item }">
-                    <IconBtn @click="openEdit(item)">
+                    <IconBtn v-if="$can('manage', 'device_management')" @click="openEdit(item)">
                         <VIcon icon="tabler-edit" />
                     </IconBtn>
-                    <IconBtn @click="remove(item)">
+                    <IconBtn v-if="$can('delete', 'device_management')" @click="remove(item)">
                         <VIcon icon="tabler-trash" />
                     </IconBtn>
                 </template>
