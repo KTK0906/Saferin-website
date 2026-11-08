@@ -10,6 +10,8 @@ declare global {
   const COOKIE_MAX_AGE_1_YEAR: typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']
   const CreateUrl: typeof import('./src/@core/composable/CreateUrl')['CreateUrl']
   const EffectScope: typeof import('vue')['EffectScope']
+  const abilityLabels: typeof import('./src/utils/report-admission-forms')['abilityLabels']
+  const abilityLevels: typeof import('./src/utils/report-admission-forms')['abilityLevels']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const alphaDashValidator: typeof import('./src/@core/utils/validators')['alphaDashValidator']
   const alphaValidator: typeof import('./src/@core/utils/validators')['alphaValidator']
@@ -17,7 +19,11 @@ declare global {
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
   const avatarText: typeof import('./src/@core/utils/formatters')['avatarText']
+  const balanceRows: typeof import('./src/utils/rehab-forms')['balanceRows']
   const betweenValidator: typeof import('./src/@core/utils/validators')['betweenValidator']
+  const bowelGroups: typeof import('./src/utils/continence-assessment')['bowelGroups']
+  const cellKey: typeof import('./src/utils/rehab-forms')['cellKey']
+  const circulationDocuments: typeof import('./src/utils/care-review-forms')['circulationDocuments']
   const clearRolePermissions: typeof import('./src/utils/permissions')['clearRolePermissions']
   const computed: typeof import('vue')['computed']
   const computedAsync: typeof import('@vueuse/core')['computedAsync']
@@ -27,16 +33,28 @@ declare global {
   const confirmedValidator: typeof import('./src/@core/utils/validators')['confirmedValidator']
   const controlledComputed: typeof import('@vueuse/core')['controlledComputed']
   const controlledRef: typeof import('@vueuse/core')['controlledRef']
+  const cornellGroups: typeof import('./src/utils/intake-referral-forms')['cornellGroups']
+  const cornellSummary: typeof import('./src/utils/intake-referral-forms')['cornellSummary']
+  const createAdmissionRecord: typeof import('./src/utils/report-admission-forms')['createAdmissionRecord']
   const createApp: typeof import('vue')['createApp']
+  const createCareReview: typeof import('./src/utils/care-review-forms')['createCareReview']
+  const createContinenceAssessment: typeof import('./src/utils/continence-assessment')['createContinenceAssessment']
   const createEventHook: typeof import('@vueuse/core')['createEventHook']
+  const createFinalExtra: typeof import('./src/utils/final-assessment-forms')['createFinalExtra']
+  const createGdsAssessment: typeof import('./src/utils/gds-assessment')['createGdsAssessment']
   const createGenericProjection: typeof import('@vueuse/math')['createGenericProjection']
   const createGlobalState: typeof import('@vueuse/core')['createGlobalState']
   const createInjectionState: typeof import('@vueuse/core')['createInjectionState']
+  const createIntakeExtra: typeof import('./src/utils/intake-referral-forms')['createIntakeExtra']
   const createPinia: typeof import('pinia')['createPinia']
   const createProjection: typeof import('@vueuse/math')['createProjection']
   const createReactiveFn: typeof import('@vueuse/core')['createReactiveFn']
+  const createRehabData: typeof import('./src/utils/rehab-forms')['createRehabData']
+  const createResidentExtra: typeof import('./src/utils/resident-forms')['createResidentExtra']
   const createReusableTemplate: typeof import('@vueuse/core')['createReusableTemplate']
   const createSharedComposable: typeof import('@vueuse/core')['createSharedComposable']
+  const createSpeechAssessment: typeof import('./src/utils/speech-assessment')['createSpeechAssessment']
+  const createSpeechCareReport: typeof import('./src/utils/report-admission-forms')['createSpeechCareReport']
   const createTemplatePromise: typeof import('@vueuse/core')['createTemplatePromise']
   const createUnrefFn: typeof import('@vueuse/core')['createUnrefFn']
   const createUrl: typeof import('./src/@core/composable/createUrl')['createUrl']
@@ -49,22 +67,36 @@ declare global {
   const defineLoader: typeof import('vue-router/auto')['defineLoader']
   const definePage: typeof import('unplugin-vue-router/runtime')['definePage']
   const defineStore: typeof import('pinia')['defineStore']
+  const deleteResidentForm: typeof import('./src/utils/resident-forms-service')['deleteResidentForm']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
   const emailValidator: typeof import('./src/@core/utils/validators')['emailValidator']
+  const emsRows: typeof import('./src/utils/rehab-forms')['emsRows']
   const extendRef: typeof import('@vueuse/core')['extendRef']
+  const fallItems: typeof import('./src/utils/care-review-forms')['fallItems']
+  const fallMeasures: typeof import('./src/utils/care-review-forms')['fallMeasures']
+  const fallNotes: typeof import('./src/utils/care-review-forms')['fallNotes']
+  const fallSummary: typeof import('./src/utils/care-review-forms')['fallSummary']
   const fetchPermissionsFromDB: typeof import('./src/utils/permissions')['fetchPermissionsFromDB']
+  const finalSections: typeof import('./src/utils/final-assessment-forms')['finalSections']
   const formatDate: typeof import('./src/@core/utils/formatters')['formatDate']
   const formatDateToMonthShort: typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']
+  const functionalGroups: typeof import('./src/utils/continence-assessment')['functionalGroups']
+  const gaitRows: typeof import('./src/utils/rehab-forms')['gaitRows']
+  const gdsQuestions: typeof import('./src/utils/gds-assessment')['gdsQuestions']
   const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
+  const getCurrentSession: typeof import('./src/utils/permissions')['getCurrentSession']
+  const getResidentForm: typeof import('./src/utils/resident-forms-service')['getResidentForm']
   const getRoleRules: typeof import('./src/utils/permissions')['getRoleRules']
   const h: typeof import('vue')['h']
+  const hasPagePermission: typeof import('./src/utils/permissions')['hasPagePermission']
   const hexToRgb: typeof import('./src/@core/utils/colorConverter')['hexToRgb']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
   const inject: typeof import('vue')['inject']
   const injectLocal: typeof import('@vueuse/core')['injectLocal']
+  const intakeReferralSections: typeof import('./src/utils/intake-referral-forms')['intakeReferralSections']
   const integerValidator: typeof import('./src/@core/utils/validators')['integerValidator']
   const isDarkPreferred: typeof import('./src/@core/composable/useThemeConfig')['isDarkPreferred']
   const isDefined: typeof import('@vueuse/core')['isDefined']
@@ -79,7 +111,11 @@ declare global {
   const isToday: typeof import('./src/@core/utils/helpers')['isToday']
   const kFormatter: typeof import('./src/@core/utils/formatters')['kFormatter']
   const lengthValidator: typeof import('./src/@core/utils/validators')['lengthValidator']
+  const liquidOptions: typeof import('./src/utils/speech-assessment')['liquidOptions']
+  const listResidentForms: typeof import('./src/utils/resident-forms-service')['listResidentForms']
   const loadCurrentUserRole: typeof import('./src/utils/permissions')['loadCurrentUserRole']
+  const loadResidentProfile: typeof import('./src/utils/resident-profile-service')['loadResidentProfile']
+  const localDate: typeof import('./src/utils/resident-profile-data')['localDate']
   const logicAnd: typeof import('@vueuse/math')['logicAnd']
   const logicNot: typeof import('@vueuse/math')['logicNot']
   const logicOr: typeof import('@vueuse/math')['logicOr']
@@ -90,8 +126,16 @@ declare global {
   const mapStores: typeof import('pinia')['mapStores']
   const mapWritableState: typeof import('pinia')['mapWritableState']
   const markRaw: typeof import('vue')['markRaw']
+  const mbiRows: typeof import('./src/utils/rehab-forms')['mbiRows']
+  const memoryWords: typeof import('./src/utils/final-assessment-forms')['memoryWords']
+  const mobilityGroups: typeof import('./src/utils/care-review-forms')['mobilityGroups']
+  const mobilitySummary: typeof import('./src/utils/care-review-forms')['mobilitySummary']
+  const mocaSummary: typeof import('./src/utils/final-assessment-forms')['mocaSummary']
+  const motorColumns: typeof import('./src/utils/rehab-forms')['motorColumns']
+  const motorMovements: typeof import('./src/utils/rehab-forms')['motorMovements']
   const nextTick: typeof import('vue')['nextTick']
   const normalizeUsername: typeof import('./src/utils/auth')['normalizeUsername']
+  const nortonItems: typeof import('./src/utils/resident-forms')['nortonItems']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeRouteLeave: typeof import('vue-router/auto')['onBeforeRouteLeave']
@@ -112,11 +156,20 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
+  const oromotorColumns: typeof import('./src/utils/speech-assessment')['oromotorColumns']
+  const oromotorKey: typeof import('./src/utils/speech-assessment')['oromotorKey']
+  const oromotorRows: typeof import('./src/utils/speech-assessment')['oromotorRows']
   const pageAccess: typeof import('./src/utils/permissions')['pageAccess']
   const paginationMeta: typeof import('./src/utils/paginationMeta')['paginationMeta']
   const passwordValidator: typeof import('./src/@core/utils/validators')['passwordValidator']
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
+  const personalBackgroundKeys: typeof import('./src/utils/resident-profile-data')['personalBackgroundKeys']
+  const personalDetails: typeof import('./src/utils/resident-profile-data')['personalDetails']
+  const personalDifferences: typeof import('./src/utils/resident-profile-data')['personalDifferences']
+  const prefillResidentForm: typeof import('./src/utils/resident-form-prefill')['prefillResidentForm']
   const prefixWithPlus: typeof import('./src/@core/utils/formatters')['prefixWithPlus']
+  const pressureItems: typeof import('./src/utils/final-assessment-forms')['pressureItems']
+  const profilePersonalData: typeof import('./src/utils/resident-profile-data')['profilePersonalData']
   const provide: typeof import('vue')['provide']
   const provideLocal: typeof import('@vueuse/core')['provideLocal']
   const reactify: typeof import('@vueuse/core')['reactify']
@@ -135,21 +188,32 @@ declare global {
   const regexValidator: typeof import('./src/@core/utils/validators')['regexValidator']
   const registerPlugins: typeof import('./src/@core/utils/plugins')['registerPlugins']
   const registerPlugins_: typeof import('./src/@core/utils/plugins')['registerPlugins_']
+  const rehabForms: typeof import('./src/utils/rehab-forms')['rehabForms']
   const requiredPermissionForPath: typeof import('./src/utils/permissions')['requiredPermissionForPath']
   const requiredValidator: typeof import('./src/@core/utils/validators')['requiredValidator']
+  const residentAge: typeof import('./src/utils/resident-profile-data')['residentAge']
+  const residentFileGroups: typeof import('./src/utils/resident-forms')['residentFileGroups']
+  const residentSections: typeof import('./src/utils/resident-forms')['residentSections']
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
   const resolveVuetifyTheme: typeof import('./src/@core/utils/vuetify')['resolveVuetifyTheme']
   const rgbaToHex: typeof import('./src/@core/utils/colorConverter')['rgbaToHex']
+  const riskSummary: typeof import('./src/utils/final-assessment-forms')['riskSummary']
   const roleLabels: typeof import('./src/utils/permissions')['roleLabels']
   const roles: typeof import('./src/utils/permissions')['roles']
+  const saveResidentForm: typeof import('./src/utils/resident-forms-service')['saveResidentForm']
+  const saveResidentProfile: typeof import('./src/utils/resident-profile-service')['saveResidentProfile']
+  const scoreSummary: typeof import('./src/utils/rehab-forms')['scoreSummary']
   const setActivePinia: typeof import('pinia')['setActivePinia']
   const setMapStoreSuffix: typeof import('pinia')['setMapStoreSuffix']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
+  const speechSections: typeof import('./src/utils/speech-assessment')['speechSections']
   const storeToRefs: typeof import('pinia')['storeToRefs']
+  const summariseGds: typeof import('./src/utils/gds-assessment')['summariseGds']
+  const symptomGroups: typeof import('./src/utils/continence-assessment')['symptomGroups']
   const syncRef: typeof import('@vueuse/core')['syncRef']
   const syncRefs: typeof import('@vueuse/core')['syncRefs']
   const templateRef: typeof import('@vueuse/core')['templateRef']
@@ -160,6 +224,7 @@ declare global {
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
   const toValue: typeof import('vue')['toValue']
+  const trainingAreas: typeof import('./src/utils/report-admission-forms')['trainingAreas']
   const triggerRef: typeof import('vue')['triggerRef']
   const tryOnBeforeMount: typeof import('@vueuse/core')['tryOnBeforeMount']
   const tryOnBeforeUnmount: typeof import('@vueuse/core')['tryOnBeforeUnmount']
@@ -169,6 +234,7 @@ declare global {
   const unref: typeof import('vue')['unref']
   const unrefElement: typeof import('@vueuse/core')['unrefElement']
   const until: typeof import('@vueuse/core')['until']
+  const urinaryGroups: typeof import('./src/utils/continence-assessment')['urinaryGroups']
   const urlValidator: typeof import('./src/@core/utils/validators')['urlValidator']
   const useAbility: typeof import('./src/plugins/casl/composables/useAbility')['useAbility']
   const useAbs: typeof import('@vueuse/math')['useAbs']
@@ -358,6 +424,13 @@ declare global {
   const useWindowSize: typeof import('@vueuse/core')['useWindowSize']
   const usecreateUrl: typeof import('./src/@core/composable/usecreateUrl')['usecreateUrl']
   const usernameToInternalEmail: typeof import('./src/utils/auth')['usernameToInternalEmail']
+  const validateAdmissionRecord: typeof import('./src/utils/report-admission-forms')['validateAdmissionRecord']
+  const validateCareReview: typeof import('./src/utils/care-review-forms')['validateCareReview']
+  const validateRehab: typeof import('./src/utils/rehab-forms')['validateRehab']
+  const validateResidentData: typeof import('./src/utils/resident-forms')['validateResidentData']
+  const validateSpeechAssessment: typeof import('./src/utils/speech-assessment')['validateSpeechAssessment']
+  const validateSpeechCareReport: typeof import('./src/utils/report-admission-forms')['validateSpeechCareReport']
+  const wanderingItems: typeof import('./src/utils/final-assessment-forms')['wanderingItems']
   const watch: typeof import('vue')['watch']
   const watchArray: typeof import('@vueuse/core')['watchArray']
   const watchAtMost: typeof import('@vueuse/core')['watchAtMost']
@@ -374,6 +447,8 @@ declare global {
   const watchTriggerable: typeof import('@vueuse/core')['watchTriggerable']
   const watchWithFilter: typeof import('@vueuse/core')['watchWithFilter']
   const whenever: typeof import('@vueuse/core')['whenever']
+  const withAuthTimeout: typeof import('./src/utils/permissions')['withAuthTimeout']
+  const yearlyMetrics: typeof import('./src/utils/rehab-forms')['yearlyMetrics']
 }
 // for type re-export
 declare global {
@@ -390,6 +465,8 @@ declare module 'vue' {
     readonly $api: UnwrapRef<typeof import('./src/utils/api')['$api']>
     readonly COOKIE_MAX_AGE_1_YEAR: UnwrapRef<typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly abilityLabels: UnwrapRef<typeof import('./src/utils/report-admission-forms')['abilityLabels']>
+    readonly abilityLevels: UnwrapRef<typeof import('./src/utils/report-admission-forms')['abilityLevels']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly alphaDashValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['alphaDashValidator']>
     readonly alphaValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['alphaValidator']>
@@ -397,7 +474,11 @@ declare module 'vue' {
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly avatarText: UnwrapRef<typeof import('./src/@core/utils/formatters')['avatarText']>
+    readonly balanceRows: UnwrapRef<typeof import('./src/utils/rehab-forms')['balanceRows']>
     readonly betweenValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['betweenValidator']>
+    readonly bowelGroups: UnwrapRef<typeof import('./src/utils/continence-assessment')['bowelGroups']>
+    readonly cellKey: UnwrapRef<typeof import('./src/utils/rehab-forms')['cellKey']>
+    readonly circulationDocuments: UnwrapRef<typeof import('./src/utils/care-review-forms')['circulationDocuments']>
     readonly clearRolePermissions: UnwrapRef<typeof import('./src/utils/permissions')['clearRolePermissions']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
@@ -407,16 +488,28 @@ declare module 'vue' {
     readonly confirmedValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['confirmedValidator']>
     readonly controlledComputed: UnwrapRef<typeof import('@vueuse/core')['controlledComputed']>
     readonly controlledRef: UnwrapRef<typeof import('@vueuse/core')['controlledRef']>
+    readonly cornellGroups: UnwrapRef<typeof import('./src/utils/intake-referral-forms')['cornellGroups']>
+    readonly cornellSummary: UnwrapRef<typeof import('./src/utils/intake-referral-forms')['cornellSummary']>
+    readonly createAdmissionRecord: UnwrapRef<typeof import('./src/utils/report-admission-forms')['createAdmissionRecord']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
+    readonly createCareReview: UnwrapRef<typeof import('./src/utils/care-review-forms')['createCareReview']>
+    readonly createContinenceAssessment: UnwrapRef<typeof import('./src/utils/continence-assessment')['createContinenceAssessment']>
     readonly createEventHook: UnwrapRef<typeof import('@vueuse/core')['createEventHook']>
+    readonly createFinalExtra: UnwrapRef<typeof import('./src/utils/final-assessment-forms')['createFinalExtra']>
+    readonly createGdsAssessment: UnwrapRef<typeof import('./src/utils/gds-assessment')['createGdsAssessment']>
     readonly createGenericProjection: UnwrapRef<typeof import('@vueuse/math')['createGenericProjection']>
     readonly createGlobalState: UnwrapRef<typeof import('@vueuse/core')['createGlobalState']>
     readonly createInjectionState: UnwrapRef<typeof import('@vueuse/core')['createInjectionState']>
+    readonly createIntakeExtra: UnwrapRef<typeof import('./src/utils/intake-referral-forms')['createIntakeExtra']>
     readonly createPinia: UnwrapRef<typeof import('pinia')['createPinia']>
     readonly createProjection: UnwrapRef<typeof import('@vueuse/math')['createProjection']>
     readonly createReactiveFn: UnwrapRef<typeof import('@vueuse/core')['createReactiveFn']>
+    readonly createRehabData: UnwrapRef<typeof import('./src/utils/rehab-forms')['createRehabData']>
+    readonly createResidentExtra: UnwrapRef<typeof import('./src/utils/resident-forms')['createResidentExtra']>
     readonly createReusableTemplate: UnwrapRef<typeof import('@vueuse/core')['createReusableTemplate']>
     readonly createSharedComposable: UnwrapRef<typeof import('@vueuse/core')['createSharedComposable']>
+    readonly createSpeechAssessment: UnwrapRef<typeof import('./src/utils/speech-assessment')['createSpeechAssessment']>
+    readonly createSpeechCareReport: UnwrapRef<typeof import('./src/utils/report-admission-forms')['createSpeechCareReport']>
     readonly createTemplatePromise: UnwrapRef<typeof import('@vueuse/core')['createTemplatePromise']>
     readonly createUnrefFn: UnwrapRef<typeof import('@vueuse/core')['createUnrefFn']>
     readonly createUrl: UnwrapRef<typeof import('./src/@core/composable/createUrl')['createUrl']>
@@ -428,21 +521,35 @@ declare module 'vue' {
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly definePage: UnwrapRef<typeof import('unplugin-vue-router/runtime')['definePage']>
     readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
+    readonly deleteResidentForm: UnwrapRef<typeof import('./src/utils/resident-forms-service')['deleteResidentForm']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly emailValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['emailValidator']>
+    readonly emsRows: UnwrapRef<typeof import('./src/utils/rehab-forms')['emsRows']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly fallItems: UnwrapRef<typeof import('./src/utils/care-review-forms')['fallItems']>
+    readonly fallMeasures: UnwrapRef<typeof import('./src/utils/care-review-forms')['fallMeasures']>
+    readonly fallNotes: UnwrapRef<typeof import('./src/utils/care-review-forms')['fallNotes']>
+    readonly fallSummary: UnwrapRef<typeof import('./src/utils/care-review-forms')['fallSummary']>
+    readonly finalSections: UnwrapRef<typeof import('./src/utils/final-assessment-forms')['finalSections']>
     readonly formatDate: UnwrapRef<typeof import('./src/@core/utils/formatters')['formatDate']>
     readonly formatDateToMonthShort: UnwrapRef<typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']>
+    readonly functionalGroups: UnwrapRef<typeof import('./src/utils/continence-assessment')['functionalGroups']>
+    readonly gaitRows: UnwrapRef<typeof import('./src/utils/rehab-forms')['gaitRows']>
+    readonly gdsQuestions: UnwrapRef<typeof import('./src/utils/gds-assessment')['gdsQuestions']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
+    readonly getCurrentSession: UnwrapRef<typeof import('./src/utils/permissions')['getCurrentSession']>
+    readonly getResidentForm: UnwrapRef<typeof import('./src/utils/resident-forms-service')['getResidentForm']>
     readonly getRoleRules: UnwrapRef<typeof import('./src/utils/permissions')['getRoleRules']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
+    readonly hasPagePermission: UnwrapRef<typeof import('./src/utils/permissions')['hasPagePermission']>
     readonly hexToRgb: UnwrapRef<typeof import('./src/@core/utils/colorConverter')['hexToRgb']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
+    readonly intakeReferralSections: UnwrapRef<typeof import('./src/utils/intake-referral-forms')['intakeReferralSections']>
     readonly integerValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['integerValidator']>
     readonly isDefined: UnwrapRef<typeof import('@vueuse/core')['isDefined']>
     readonly isEmpty: UnwrapRef<typeof import('./src/@core/utils/helpers')['isEmpty']>
@@ -456,7 +563,11 @@ declare module 'vue' {
     readonly isToday: UnwrapRef<typeof import('./src/@core/utils/helpers')['isToday']>
     readonly kFormatter: UnwrapRef<typeof import('./src/@core/utils/formatters')['kFormatter']>
     readonly lengthValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['lengthValidator']>
+    readonly liquidOptions: UnwrapRef<typeof import('./src/utils/speech-assessment')['liquidOptions']>
+    readonly listResidentForms: UnwrapRef<typeof import('./src/utils/resident-forms-service')['listResidentForms']>
     readonly loadCurrentUserRole: UnwrapRef<typeof import('./src/utils/permissions')['loadCurrentUserRole']>
+    readonly loadResidentProfile: UnwrapRef<typeof import('./src/utils/resident-profile-service')['loadResidentProfile']>
+    readonly localDate: UnwrapRef<typeof import('./src/utils/resident-profile-data')['localDate']>
     readonly logicAnd: UnwrapRef<typeof import('@vueuse/math')['logicAnd']>
     readonly logicNot: UnwrapRef<typeof import('@vueuse/math')['logicNot']>
     readonly logicOr: UnwrapRef<typeof import('@vueuse/math')['logicOr']>
@@ -467,8 +578,16 @@ declare module 'vue' {
     readonly mapStores: UnwrapRef<typeof import('pinia')['mapStores']>
     readonly mapWritableState: UnwrapRef<typeof import('pinia')['mapWritableState']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
+    readonly mbiRows: UnwrapRef<typeof import('./src/utils/rehab-forms')['mbiRows']>
+    readonly memoryWords: UnwrapRef<typeof import('./src/utils/final-assessment-forms')['memoryWords']>
+    readonly mobilityGroups: UnwrapRef<typeof import('./src/utils/care-review-forms')['mobilityGroups']>
+    readonly mobilitySummary: UnwrapRef<typeof import('./src/utils/care-review-forms')['mobilitySummary']>
+    readonly mocaSummary: UnwrapRef<typeof import('./src/utils/final-assessment-forms')['mocaSummary']>
+    readonly motorColumns: UnwrapRef<typeof import('./src/utils/rehab-forms')['motorColumns']>
+    readonly motorMovements: UnwrapRef<typeof import('./src/utils/rehab-forms')['motorMovements']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
     readonly normalizeUsername: UnwrapRef<typeof import('./src/utils/auth')['normalizeUsername']>
+    readonly nortonItems: UnwrapRef<typeof import('./src/utils/resident-forms')['nortonItems']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
     readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router/auto')['onBeforeRouteLeave']>
@@ -489,11 +608,20 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
+    readonly oromotorColumns: UnwrapRef<typeof import('./src/utils/speech-assessment')['oromotorColumns']>
+    readonly oromotorKey: UnwrapRef<typeof import('./src/utils/speech-assessment')['oromotorKey']>
+    readonly oromotorRows: UnwrapRef<typeof import('./src/utils/speech-assessment')['oromotorRows']>
     readonly pageAccess: UnwrapRef<typeof import('./src/utils/permissions')['pageAccess']>
     readonly paginationMeta: UnwrapRef<typeof import('./src/utils/paginationMeta')['paginationMeta']>
     readonly passwordValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['passwordValidator']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
+    readonly personalBackgroundKeys: UnwrapRef<typeof import('./src/utils/resident-profile-data')['personalBackgroundKeys']>
+    readonly personalDetails: UnwrapRef<typeof import('./src/utils/resident-profile-data')['personalDetails']>
+    readonly personalDifferences: UnwrapRef<typeof import('./src/utils/resident-profile-data')['personalDifferences']>
+    readonly prefillResidentForm: UnwrapRef<typeof import('./src/utils/resident-form-prefill')['prefillResidentForm']>
     readonly prefixWithPlus: UnwrapRef<typeof import('./src/@core/utils/formatters')['prefixWithPlus']>
+    readonly pressureItems: UnwrapRef<typeof import('./src/utils/final-assessment-forms')['pressureItems']>
+    readonly profilePersonalData: UnwrapRef<typeof import('./src/utils/resident-profile-data')['profilePersonalData']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly provideLocal: UnwrapRef<typeof import('@vueuse/core')['provideLocal']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
@@ -511,21 +639,32 @@ declare module 'vue' {
     readonly refWithControl: UnwrapRef<typeof import('@vueuse/core')['refWithControl']>
     readonly regexValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['regexValidator']>
     readonly registerPlugins: UnwrapRef<typeof import('./src/@core/utils/plugins')['registerPlugins']>
+    readonly rehabForms: UnwrapRef<typeof import('./src/utils/rehab-forms')['rehabForms']>
     readonly requiredPermissionForPath: UnwrapRef<typeof import('./src/utils/permissions')['requiredPermissionForPath']>
     readonly requiredValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['requiredValidator']>
+    readonly residentAge: UnwrapRef<typeof import('./src/utils/resident-profile-data')['residentAge']>
+    readonly residentFileGroups: UnwrapRef<typeof import('./src/utils/resident-forms')['residentFileGroups']>
+    readonly residentSections: UnwrapRef<typeof import('./src/utils/resident-forms')['residentSections']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
     readonly resolveVuetifyTheme: UnwrapRef<typeof import('./src/@core/utils/vuetify')['resolveVuetifyTheme']>
     readonly rgbaToHex: UnwrapRef<typeof import('./src/@core/utils/colorConverter')['rgbaToHex']>
+    readonly riskSummary: UnwrapRef<typeof import('./src/utils/final-assessment-forms')['riskSummary']>
     readonly roleLabels: UnwrapRef<typeof import('./src/utils/permissions')['roleLabels']>
     readonly roles: UnwrapRef<typeof import('./src/utils/permissions')['roles']>
+    readonly saveResidentForm: UnwrapRef<typeof import('./src/utils/resident-forms-service')['saveResidentForm']>
+    readonly saveResidentProfile: UnwrapRef<typeof import('./src/utils/resident-profile-service')['saveResidentProfile']>
+    readonly scoreSummary: UnwrapRef<typeof import('./src/utils/rehab-forms')['scoreSummary']>
     readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
     readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
+    readonly speechSections: UnwrapRef<typeof import('./src/utils/speech-assessment')['speechSections']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
+    readonly summariseGds: UnwrapRef<typeof import('./src/utils/gds-assessment')['summariseGds']>
+    readonly symptomGroups: UnwrapRef<typeof import('./src/utils/continence-assessment')['symptomGroups']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
     readonly templateRef: UnwrapRef<typeof import('@vueuse/core')['templateRef']>
@@ -536,6 +675,7 @@ declare module 'vue' {
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
     readonly toValue: UnwrapRef<typeof import('vue')['toValue']>
+    readonly trainingAreas: UnwrapRef<typeof import('./src/utils/report-admission-forms')['trainingAreas']>
     readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
     readonly tryOnBeforeMount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeMount']>
     readonly tryOnBeforeUnmount: UnwrapRef<typeof import('@vueuse/core')['tryOnBeforeUnmount']>
@@ -545,6 +685,7 @@ declare module 'vue' {
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
+    readonly urinaryGroups: UnwrapRef<typeof import('./src/utils/continence-assessment')['urinaryGroups']>
     readonly urlValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['urlValidator']>
     readonly useAbility: UnwrapRef<typeof import('./src/plugins/casl/composables/useAbility')['useAbility']>
     readonly useAbs: UnwrapRef<typeof import('@vueuse/math')['useAbs']>
@@ -729,6 +870,13 @@ declare module 'vue' {
     readonly useWindowScroll: UnwrapRef<typeof import('@vueuse/core')['useWindowScroll']>
     readonly useWindowSize: UnwrapRef<typeof import('@vueuse/core')['useWindowSize']>
     readonly usernameToInternalEmail: UnwrapRef<typeof import('./src/utils/auth')['usernameToInternalEmail']>
+    readonly validateAdmissionRecord: UnwrapRef<typeof import('./src/utils/report-admission-forms')['validateAdmissionRecord']>
+    readonly validateCareReview: UnwrapRef<typeof import('./src/utils/care-review-forms')['validateCareReview']>
+    readonly validateRehab: UnwrapRef<typeof import('./src/utils/rehab-forms')['validateRehab']>
+    readonly validateResidentData: UnwrapRef<typeof import('./src/utils/resident-forms')['validateResidentData']>
+    readonly validateSpeechAssessment: UnwrapRef<typeof import('./src/utils/speech-assessment')['validateSpeechAssessment']>
+    readonly validateSpeechCareReport: UnwrapRef<typeof import('./src/utils/report-admission-forms')['validateSpeechCareReport']>
+    readonly wanderingItems: UnwrapRef<typeof import('./src/utils/final-assessment-forms')['wanderingItems']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchArray: UnwrapRef<typeof import('@vueuse/core')['watchArray']>
     readonly watchAtMost: UnwrapRef<typeof import('@vueuse/core')['watchAtMost']>
@@ -745,5 +893,7 @@ declare module 'vue' {
     readonly watchTriggerable: UnwrapRef<typeof import('@vueuse/core')['watchTriggerable']>
     readonly watchWithFilter: UnwrapRef<typeof import('@vueuse/core')['watchWithFilter']>
     readonly whenever: UnwrapRef<typeof import('@vueuse/core')['whenever']>
+    readonly withAuthTimeout: UnwrapRef<typeof import('./src/utils/permissions')['withAuthTimeout']>
+    readonly yearlyMetrics: UnwrapRef<typeof import('./src/utils/rehab-forms')['yearlyMetrics']>
   }
 }

@@ -1,6 +1,7 @@
 import type { Rule } from '@/plugins/casl/ability'
 import { ability } from '@/plugins/casl/ability'
 import { supabase } from '@/lib/supabaseClient'
+import type { Session } from '@supabase/supabase-js'
 
 export const roles = ['admin', 'principal', 'lead_nurse', 'nurse', 'ot_pt', 'caregiver'] as const
 export type AppRole = typeof roles[number]
@@ -30,6 +31,25 @@ const normRole = (value: string) => value.trim().toLowerCase().replace(/[_-]/g, 
 let loadedUserId: string | null = null
 let loadedRole: AppRole | null = null
 let databasePermissions: Record<string, string[]> = {}
+let permissionsLoaded = false
+let loadedAt = 0
+let generation = 0
+let pending: { userId: string; promise: Promise<AppRole | null> } | null = null
+
+export async function withAuthTimeout<T>(operation: PromiseLike<T>, label: string, ms = 15000): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    return await Promise.race([Promise.resolve(operation), new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`${label} timed out. Please try again.`)), ms)
+    })])
+  } finally { if (timer) clearTimeout(timer) }
+}
+
+export async function getCurrentSession(): Promise<Session | null> {
+  const { data, error } = await withAuthTimeout(supabase.auth.getSession(), 'Session loading')
+  if (error) throw error
+  return data.session
+}
 
 const pageNameToPermission = (name: string): PagePermission | undefined => {
   const key = name.toLowerCase().replace(/[^a-z0-9]+(.)/g, (_m, c) => String(c).toUpperCase()).replace(/[^a-zA-Z0-9]/g, '')
@@ -72,7 +92,7 @@ export const getRoleRules = (role: AppRole): Rule[] => {
     ]
   }
 
-  const configured = Object.keys(databasePermissions).length > 0
+  const configured = permissionsLoaded
     ? Object.entries(databasePermissions).map(([subject, permissions]) => ({ subject: subject as PagePermission, permissions }))
     : (Object.entries(pageAccess) as [PagePermission, readonly AppRole[]][]).filter(([, permittedRoles]) => permittedRoles.includes(role)).map(([subject]) => ({ subject, permissions: ['read', 'write', 'delete'] }))
   return configured.flatMap(({ subject, permissions }) => [
@@ -104,10 +124,14 @@ export const clearRolePermissions = () => {
   loadedUserId = null
   loadedRole = null
   databasePermissions = {}
+  permissionsLoaded = false
+  loadedAt = 0
+  generation++
+  pending = null
 }
 
-export const loadCurrentUserRole = async (forceRefresh = true): Promise<AppRole | null> => {
-  const { data: { session } } = await supabase.auth.getSession()
+export const loadCurrentUserRole = async (forceRefresh = false, knownSession?: Session): Promise<AppRole | null> => {
+  const session = knownSession ?? await getCurrentSession()
   const user = session?.user
 
   if (!user) {
@@ -115,52 +139,52 @@ export const loadCurrentUserRole = async (forceRefresh = true): Promise<AppRole 
     return null
   }
 
-  if (!forceRefresh && loadedUserId === user.id && loadedRole)
+  if (pending?.userId === user.id) return pending.promise
+  if (!forceRefresh && loadedUserId === user.id && loadedRole && Date.now() - loadedAt < 30000)
     return loadedRole
-
-  try {
-    const { data, error } = await supabase
-      .from('app_users')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle()
-
-    if (error) {
-      console.error('[PERMISSIONS DEBUG] Supabase Query Error:', error.message)
+  const version = ++generation
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 12000)
+  const promise = (async (): Promise<AppRole | null> => {
+    try {
+      const [profile, matrix] = await withAuthTimeout(Promise.all([
+        supabase.from('app_users').select('role').eq('id', user.id).abortSignal(controller.signal).maybeSingle(),
+        supabase.from('page_permissions').select('page_name, allowed_roles, permissions').abortSignal(controller.signal),
+      ]), 'Account permissions loading')
+      if (profile.error) throw new Error(`Cannot load account: ${profile.error.message}`)
+      if (matrix.error) throw new Error(`Cannot load permissions: ${matrix.error.message}`)
+      const realRole = dbRoleToAppRole[normRole(profile.data?.role || '')]
+      if (!realRole) throw new Error('No valid role is linked to this account. Please contact your administrator.')
+      if (version !== generation) return null
+      databasePermissions = {}
+      ;(matrix.data || []).forEach((row: any) => {
+        const subject = pageNameToPermission(row.page_name)
+        if (subject && (row.allowed_roles || []).some((r: string) => dbRoleToAppRole[normRole(r)] === realRole))
+          databasePermissions[subject] = row.permissions || ['read']
+      })
+      permissionsLoaded = true
+      loadedUserId = user.id
+      loadedRole = realRole
+      loadedAt = Date.now()
+      applyRolePermissions(realRole)
+      return realRole
+    } catch (error) {
+      if (version === generation) clearRolePermissions()
+      throw error
+    } finally {
+      clearTimeout(timeout)
+      controller.abort()
+      if (version === generation) pending = null
     }
-
-    // Clean up role string (e.g., "Principal " -> "principal")
-    const rawRole = (data?.role || user.user_metadata?.role || '').trim().toLowerCase()
-    
-    const realRole = dbRoleToAppRole[rawRole] 
-      || (roles.includes(rawRole as AppRole) ? (rawRole as AppRole) : 'caregiver')
-
-    console.log('[PERMISSIONS DEBUG] Resolved Role:', `"${data?.role}" -> "${realRole}"`)
-
-    const { data: pageRows } = await supabase.from('page_permissions').select('page_name, allowed_roles, permissions')
-    databasePermissions = {}
-    ;(pageRows || []).forEach((row: any) => {
-      const subject = pageNameToPermission(row.page_name)
-      const allowed = (row.allowed_roles || []).some((r: string) => dbRoleToAppRole[normRole(r)] === realRole)
-      if (subject && allowed)
-        databasePermissions[subject] = row.permissions || ['read']
-    })
-    loadedUserId = user.id
-    loadedRole = realRole
-    applyRolePermissions(realRole)
-
-    return realRole
-  } catch (error) {
-    console.error('[PERMISSIONS DEBUG] Role resolution failed:', error)
-    applyRolePermissions('caregiver')
-    return 'caregiver'
-  }
+  })()
+  pending = { userId: user.id, promise }
+  return promise
 }
 
 const protectedPathPermissions: Array<[string, PagePermission]> = [
   ['/home', 'dashboard'],
   ['/dashboards/analytics', 'dashboard'],
-  ['/elderly-list', 'elderly_list'],
+  ['/elderly-list', 'elderly_list'], ['/elderly-view', 'elderly_list'],
   ['/family-visits', 'family_visits'],
   ['/staff-assignment-history', 'staff_assignment_history'],
   ['/alert-history', 'alert_history'],
