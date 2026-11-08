@@ -30,7 +30,7 @@ const form = ref({
 
 const isPasswordVisible = ref(false)
 const isLoading = ref(false)
-const errorMessage = ref('')
+const errorMessage = ref(route.query.error ? 'Unable to load your session or account permissions. Please sign in again or contact your administrator.' : '')
 
 // Email validation rule
 const emailValidator = (value: string) => {
@@ -45,6 +45,7 @@ const emailValidator = (value: string) => {
 }
 
 async function handleLogin() {
+  if (isLoading.value) return
   // 1. Trigger form validation
   if (refVForm.value) {
     const { valid } = await refVForm.value.validate()
@@ -76,13 +77,13 @@ async function handleLogin() {
 
     if (data.user) {
       // 4. Load current user role and sync CASL permissions via permissions.ts
-      await loadCurrentUserRole()
+      await loadCurrentUserRole(true, data.session || undefined)
     }
 
     // 5. Navigate to home or intended route
-    await nextTick(() => {
-      router.replace(route.query.to ? String(route.query.to) : '/home')
-    })
+    await nextTick()
+    const target = String(route.query.to || '/home')
+    await router.replace(target.startsWith('/') && !target.startsWith('//') && !target.startsWith('/login') ? target : '/home')
   } catch (err: any) {
     errorMessage.value = err.message || 'Login failed. Please check your credentials.'
   } finally {

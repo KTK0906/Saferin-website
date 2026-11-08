@@ -26,7 +26,7 @@ const load = async () => {
     const [r, s, e] = await Promise.all([
         supabase.from('historical_sensor_readings').select('*').order('recorded_at', { ascending: false }),
         supabase.from('sensor_devices').select('id,name,sensor_type,zone'),
-        supabase.from('elderly').select('id,name,zone').order('name'),
+        supabase.rpc('resident_directory').order('name'),
     ])
     readings.value = (r.data || []) as Reading[]
     sensors.value = s.data || []

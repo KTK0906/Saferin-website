@@ -1,7 +1,6 @@
 import type { RouteNamedMap, _RouterTyped } from 'unplugin-vue-router'
-import { supabase } from '@/lib/supabaseClient'
 import { ability } from '@/plugins/casl/ability'
-import { loadCurrentUserRole, requiredPermissionForPath } from '@/utils/permissions'
+import { getCurrentSession, loadCurrentUserRole, requiredPermissionForPath } from '@/utils/permissions'
 
 export const setupGuards = (router: _RouterTyped<RouteNamedMap & { [key: string]: any }>) => {
   // 👉 router.beforeEach
@@ -14,7 +13,9 @@ export const setupGuards = (router: _RouterTyped<RouteNamedMap & { [key: string]
     if (to.meta.public)
       return
 
-    const { data: { session } } = await supabase.auth.getSession()
+    let session
+    try { session = await getCurrentSession() }
+    catch { return { name: 'login', query: { error: 'session', to: to.fullPath } } }
     const isLoggedIn = !!session
 
     /*
@@ -41,10 +42,11 @@ export const setupGuards = (router: _RouterTyped<RouteNamedMap & { [key: string]
 
     if (isLoggedIn) {
       try {
-        await loadCurrentUserRole()
+        const role = await loadCurrentUserRole(false, session!)
+        if (!role) return { name: 'login' }
       }
       catch {
-        return { name: 'not-authorized' }
+        return { name: 'login', query: { error: 'permissions', to: to.fullPath } }
       }
 
       const requiredPermission = requiredPermissionForPath(to.path)

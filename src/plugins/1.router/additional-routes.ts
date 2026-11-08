@@ -4,6 +4,7 @@ const emailRouteComponent = () => import('@/pages/apps/email/index.vue')
 
 // 👉 Redirects
 export const redirects: RouteRecordRaw[] = [
+  {path:'/forms-management',redirect:'/elderly-list'},
   // ℹ️ We are redirecting to different pages based on role.
   // NOTE: Role is just for UI purposes. ACL is based on abilities.
   {

@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { supabase } from '@/lib/supabaseClient'
+import {residentAge} from '@/utils/resident-profile-data'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import ElderlyFormDialog from '@/components/ElderlyFormDialog.vue'
+import ResidentForms from '@/components/ResidentForms.vue'
+import type {ResidentContext,ResidentFormRow} from '@/utils/resident-forms-service'
 
 export interface ElderlyRecord {
     id: string
@@ -11,7 +14,7 @@ export interface ElderlyRecord {
     name: string
     resident_name?: string
     avatar_url?: string
-    age: number
+    age: number | null
     care_level: string
     last_activity: string
     sensor_status: string
@@ -53,6 +56,10 @@ const fetchError = ref('')
 const lastUpdated = ref('')
 const isElderlyFormOpen = ref(false)
 const elderlyToEdit = ref<ElderlyRecord | null>(null)
+const formResident=ref<ResidentContext|null>(null)
+const savedFormResident=ref<string|null>(null)
+const formNotice=ref('')
+function handleFormSaved(row:ResidentFormRow){savedFormResident.value=row.elderly_id;formNotice.value=`Form saved for ${formResident.value?.name||'this resident'}.`}
 
 // Modal / Dialog State
 const showDetailsModal = ref(false)
@@ -104,6 +111,7 @@ const fetchElderlyData = async () => {
 
         elderlyList.value = (data ?? []).map(item => ({
             ...item,
+            age:residentAge(item),
             name: item.name || item.resident_name || ''
         }))
 
@@ -198,11 +206,11 @@ const filteredElderlyList = computed(() => {
         let matchesAge = true
         if (selectedAgeRange.value && selectedAgeRange.value !== 'All') {
             if (selectedAgeRange.value === '60-69') {
-                matchesAge = item.age >= 60 && item.age <= 69
+                matchesAge = item.age !== null && item.age >= 60 && item.age <= 69
             } else if (selectedAgeRange.value === '70-79') {
-                matchesAge = item.age >= 70 && item.age <= 79
+                matchesAge = item.age !== null && item.age >= 70 && item.age <= 79
             } else if (selectedAgeRange.value === '80+') {
-                matchesAge = item.age >= 80
+                matchesAge = item.age !== null && item.age >= 80
             }
         }
 
@@ -229,6 +237,7 @@ const getSensorStatusColor = (status: string) => {
 
 <template>
     <div class="ecommerce-list-layout">
+        <VAlert v-if="formNotice" type="success" variant="tonal" closable class="mb-5" @click:close="formNotice=''">{{formNotice}}<VBtn variant="text" size="small" @click="router.push({path:`/elderly-view/${savedFormResident}`,query:{tab:'forms'}})">View Forms</VBtn></VAlert>
         <VCard>
             <!-- Filter Section -->
             <VCardText class="pa-6">
@@ -305,6 +314,7 @@ const getSensorStatusColor = (status: string) => {
                             </template>
                             <VList density="compact">
                                 <VListItem prepend-icon="tabler-eye" title="View" @click="openElderlyDetail(item)" />
+                                <VListItem v-if="$can('read','elderly_list')&&$can('manage','elderly_list')" prepend-icon="tabler-file-plus" title="Create Form" @click="formResident=item" />
                                 <VListItem v-if="$can('manage', 'elderly_list')" prepend-icon="tabler-edit" title="Edit" @click="openEditElderly(item)" />
                                 <VListItem v-if="$can('delete', 'elderly_list')" prepend-icon="tabler-trash" title="Delete" @click="deleteElderly(item)" />
                             </VList>
@@ -322,6 +332,7 @@ const getSensorStatusColor = (status: string) => {
 
     <!-- Elderly Detail Side Drawer / Dialog Component -->
     <ElderlyFormDialog v-model="isElderlyFormOpen" :elderly="elderlyToEdit" @saved="handleElderlySaved" />
+    <ResidentForms v-if="formResident" :key="formResident.id" :resident="formResident" :show-list="false" create-on-mount @saved="handleFormSaved" @close="formResident=null" />
 </template>
 
 <style scoped>

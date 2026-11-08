@@ -23,9 +23,10 @@ const authStorage = {
     const isRemembered = localStorage.getItem(rememberMeKey) === 'true'
     const targetStorage = isRemembered ? localStorage : sessionStorage
 
-    // 先雙向清理，避免雙重儲存殘留舊 Token
-    localStorage.removeItem(key)
-    sessionStorage.removeItem(key)
+    // Replace the session atomically; removing the active key first emits
+    // misleading signed-out storage events to other open tabs.
+    const otherStorage = isRemembered ? sessionStorage : localStorage
+    otherStorage.removeItem(key)
     
     targetStorage.setItem(key, value)
   },

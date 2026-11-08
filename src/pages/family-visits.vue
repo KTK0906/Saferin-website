@@ -25,10 +25,11 @@ const load = async () => {
   loading.value = true; errorMessage.value = ''
   const [visitResult, elderlyResult] = await Promise.all([
     supabase.from('family_visit_records').select('*').order('visited_at', { ascending: false }),
-    supabase.from('elderly').select('id, name, zone').order('name'),
+    supabase.rpc('resident_directory').order('name'),
   ])
   if (visitResult.error) errorMessage.value = visitResult.error.message
-  const people = elderlyResult.data ?? []
+  if (elderlyResult.error) errorMessage.value = elderlyResult.error.message
+  const people: Elderly[] = elderlyResult.data ?? []
   elderly.value = people
   visits.value = (visitResult.data ?? []).map(visit => ({ ...visit, elderly: people.find(person => person.id === visit.elderly_id) })) as Visit[]
   loading.value = false

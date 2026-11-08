@@ -1,47 +1,40 @@
 <script setup lang="ts">
 import { supabase } from '@/lib/supabaseClient'
+import ResidentForms from '@/components/ResidentForms.vue'
+import ElderlyFormDialog from '@/components/ElderlyFormDialog.vue'
+import ResidentProfileSummary from '@/components/ResidentProfileSummary.vue'
+import {loadResidentProfile} from '@/utils/resident-profile-service'
+import {residentAge} from '@/utils/resident-profile-data'
+import type {ProfileBundle} from '@/utils/resident-profile-data'
+import {useAbility} from '@casl/vue'
 
 const route = useRoute('elderly-view-id')
 const router = useRouter()
-const { data: resident, error } = await supabase.from('elderly').select('*').eq('id', route.params.id).maybeSingle()
-const { data: medicalInformation } = await supabase.from('medical_information').select('*').eq('elderly_id', route.params.id).maybeSingle()
+const profile=ref<ProfileBundle|null>(null)
+const profileError=ref('')
+try{profile.value=await loadResidentProfile(String(route.params.id))}catch(error:any){profileError.value=error.message||'Unable to load resident profile.'}
+const resident=computed(()=>profile.value?.resident)
+const permissions=useAbility()
+const canEditProfile=computed(()=>permissions.rules.some(r=>!r.inverted&&((r.subject==='all'&&r.action==='manage')||(r.subject==='elderly_list'&&r.action==='read')))&&permissions.rules.some(r=>!r.inverted&&((r.subject==='all'&&r.action==='manage')||(r.subject==='elderly_list'&&r.action==='manage'))))
+function applyProfile(bundle:ProfileBundle){profile.value=bundle}
 const { data: medicalCheck } = await supabase.from('medical_checks').select('*').eq('elderly_id', route.params.id).order('check_date', { ascending: false }).limit(1).maybeSingle()
-const { data: emergencyContacts } = await supabase.from('emergency_contacts').select('*').eq('elderly_id', route.params.id).maybeSingle()
 const { data: currentVitals } = await supabase.from('health_vitals').select('*').eq('elderly_id', route.params.id).order('recorded_at', { ascending: false }).limit(1).maybeSingle()
 const { data: sensorReadings } = await supabase.from('sensor_readings').select('*').eq('elderly_id', route.params.id).order('recorded_at', { ascending: false }).limit(1).maybeSingle()
 const { data: schedules, error: scheduleLoadError } = await supabase.from('elderly_schedules').select('*').eq('elderly_id', route.params.id).order('scheduled_time', { ascending: true })
 const { data: alerts, error: alertsLoadError } = await supabase.from('elderly_alerts').select('*').eq('elderly_id', route.params.id).order('occurred_at', { ascending: false }).limit(20)
 const { data: familyVisits, error: familyVisitsLoadError } = await supabase.from('family_visit_records').select('*').eq('elderly_id', route.params.id).order('visited_at', { ascending: false }).limit(20)
 
-const loading = ref(false)
 const editOpen = ref(false)
-const editForm = ref<any>({})
 const scheduleDrawer = ref(false)
 const scheduleSaving = ref(false)
 const editingScheduleId = ref<string | null>(null)
 const scheduleForm = ref({ category: 'Medication', item: '', scheduledTime: '', scheduleType: 'Routine', remarks: '' })
 const scheduleCategories = ['Medication', 'Meal', 'Exercise', 'Activity']
 const scheduleTypes = ['Routine', 'Once Only', 'Focus', 'Recently Added']
-const activeTab = ref(0)
+const activeTab = ref(route.query.tab==='forms'?5:0)
+watch(()=>route.query.tab,tab=>{if(tab==='forms')activeTab.value=5})
 
-if (error || !resident) {
-  await router.replace('/elderly-list')
-}
-
-const openEdit = () => { editForm.value = { ...resident }; editOpen.value = true }
-const save = async () => {
-  loading.value = true
-  const { error: updateError } = await supabase.from('elderly').update({
-    name: editForm.value.name,
-    age: Number(editForm.value.age),
-    care_level: editForm.value.care_level,
-    zone: editForm.value.zone,
-    bed: editForm.value.bed,
-    sensor_status: editForm.value.sensor_status,
-  }).eq('id', route.params.id)
-  loading.value = false
-  if (!updateError) { editOpen.value = false; location.reload() }
-}
+const openEdit = () => { if(canEditProfile.value)editOpen.value=true }
 
 const openSchedule = (schedule?: any) => {
   editingScheduleId.value = schedule?.id || null
@@ -81,6 +74,7 @@ const deleteSchedule = async (schedule: any) => {
 </script>
 
 <template>
+  <VAlert v-if="profileError" type="error" variant="tonal">{{profileError}}</VAlert>
   <VRow v-if="resident">
     <!-- Left Column: Personal Profile -->
     <VCol cols="12" md="5" lg="4">
@@ -99,12 +93,14 @@ const deleteSchedule = async (schedule: any) => {
         </div>
         <VDivider class="my-6" />
         <div class="text-h6 mb-4">Personal Information</div>
-        <div class="detail-line"><strong>Age:</strong> {{ resident.age || 'Not recorded' }}</div>
+        <div class="detail-line"><strong>Age:</strong> {{ residentAge(resident) ?? 'Not recorded' }}</div>
+        <div class="detail-line"><strong>Sex:</strong> {{ resident.gender || 'Not recorded' }}</div>
         <div class="detail-line"><strong>Zone:</strong> {{ resident.zone || 'Not recorded' }}</div>
-        <div class="detail-line"><strong>Room:</strong> {{ resident.room || resident.bed || 'Not recorded' }}</div>
+        <div class="detail-line"><strong>Room:</strong> {{ resident.room || 'Not recorded' }}</div>
+        <div class="detail-line"><strong>Bed:</strong> {{ resident.bed || 'Not recorded' }}</div>
         <div class="detail-line"><strong>Caregiver:</strong> {{ resident.main_caregiver || 'Not recorded' }}</div>
         <div class="d-flex justify-center mt-6">
-          <VBtn color="primary" prepend-icon="tabler-edit" @click="openEdit">Edit</VBtn>
+          <VBtn v-if="canEditProfile" color="primary" prepend-icon="tabler-edit" @click="openEdit">Edit Profile</VBtn>
         </div>
       </VCard>
     </VCol>
@@ -127,21 +123,13 @@ const deleteSchedule = async (schedule: any) => {
         <VTab>
           <VIcon icon="tabler-users" class="me-1" />Family Visits
         </VTab>
+        <VTab><VIcon icon="tabler-clipboard-list" class="me-1" />Forms</VTab>
       </VTabs>
 
       <VWindow v-model="activeTab" class="mt-6">
         <!-- Overview Tab -->
         <VWindowItem>
-          <VCard>
-            <VCardItem><VCardTitle>Medical Information</VCardTitle></VCardItem>
-            <VCardText>
-              <VRow>
-                <VCol cols="12"><div class="text-caption">Conditions</div><div>{{ medicalInformation?.conditions?.join(', ') || 'Not recorded' }}</div></VCol>
-                <VCol cols="12"><div class="text-caption">Allergies</div><div>{{ medicalInformation?.allergies?.join(', ') || 'Not recorded' }}</div></VCol>
-                <VCol cols="12"><div class="text-caption">Medications</div><div>{{ medicalInformation?.medications || 'Not recorded' }}</div></VCol>
-              </VRow>
-            </VCardText>
-          </VCard>
+          <ResidentProfileSummary v-if="profile" :bundle="profile" show-personal />
 
           <VCard class="mt-6">
             <VCardItem><VCardTitle>Last Medical Check</VCardTitle></VCardItem>
@@ -156,16 +144,7 @@ const deleteSchedule = async (schedule: any) => {
             </VCardText>
           </VCard>
 
-          <VCard class="mt-6">
-            <VCardItem><VCardTitle>Emergency Contacts</VCardTitle></VCardItem>
-            <VCardText>
-              <VRow>
-                <VCol cols="12" sm="4"><div class="text-caption">Primary</div><div>{{ emergencyContacts?.primary_contact || 'Not recorded' }}</div></VCol>
-                <VCol cols="12" sm="4"><div class="text-caption">Secondary</div><div>{{ emergencyContacts?.secondary_contact || 'Not recorded' }}</div></VCol>
-                <VCol cols="12" sm="4"><div class="text-caption">Doctor Contact</div><div>{{ emergencyContacts?.doctor_contact || 'Not recorded' }}</div></VCol>
-              </VRow>
-            </VCardText>
-          </VCard>
+
         </VWindowItem>
 
         <!-- Health Vitals Tab -->
@@ -292,6 +271,7 @@ const deleteSchedule = async (schedule: any) => {
             </tbody></VTable></VCardText>
           </VCard>
         </VWindowItem>
+        <VWindowItem><ResidentForms v-if="activeTab===5&&resident" :key="resident.id" :resident="resident" @profile-updated="applyProfile" /></VWindowItem>
       </VWindow>
     </VCol>
   </VRow>
@@ -317,37 +297,7 @@ const deleteSchedule = async (schedule: any) => {
     </VCard>
   </VNavigationDrawer>
 
-  <!-- Dialog: Edit Elderly Profile -->
-  <VDialog v-model="editOpen" max-width="520">
-    <VCard>
-      <AppDrawerHeaderSection title="Edit Elderly" @cancel="editOpen = false" />
-      <VDivider />
-      <VCardText>
-        <VForm @submit.prevent="save">
-          <AppTextField v-model="editForm.name" label="Name" class="mb-4" />
-          <AppTextField v-model.number="editForm.age" type="number" label="Age" class="mb-4" />
-          <AppSelect 
-            v-model="editForm.care_level" 
-            :items="['Normal', 'Disabled', 'Mental Issue', 'Emergency']"
-            label="Care Level" 
-            class="mb-4" 
-          />
-          <AppTextField v-model="editForm.zone" label="Zone" class="mb-4" />
-          <AppTextField v-model="editForm.bed" label="Bed" class="mb-4" />
-          <AppSelect 
-            v-model="editForm.sensor_status" 
-            :items="['Normal', 'Warning', 'Issue', 'Error']"
-            label="Sensor Status" 
-            class="mb-4" 
-          />
-          <div class="d-flex justify-end gap-3">
-            <VBtn variant="text" @click="editOpen = false">Cancel</VBtn>
-            <VBtn type="submit" color="primary" :loading="loading">Save</VBtn>
-          </div>
-        </VForm>
-      </VCardText>
-    </VCard>
-  </VDialog>
+  <ElderlyFormDialog v-if="resident" v-model="editOpen" :elderly="{id:resident.id}" @saved="applyProfile" />
 </template>
 
 <style scoped>
